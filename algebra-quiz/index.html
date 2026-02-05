@@ -414,37 +414,29 @@
         }
 
        
-        function submitToGoogleSheets(data) {
-          // Ensure iframe exists first
-          let iframe = document.getElementById('hidden-iframe');
-          if (!iframe) {
-            iframe = document.createElement('iframe');
-            iframe.id = 'hidden-iframe';
-            iframe.name = 'hidden-iframe';
-            iframe.style.display = 'none';
-            document.body.appendChild(iframe);
+        async function submitToGoogleSheets(data) {
+          console.log("Sending to Apps Script:", data);
+        
+          try {
+            const response = await fetch(GOOGLE_SCRIPT_URL, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify(data)
+            });
+        
+            console.log("Response:", await response.text());
+            return true;
+        
+          } catch (err) {
+            console.error("Submit error:", err);
+            return false;
           }
-        
-          const form = document.createElement('form');
-          form.method = 'POST';
-          form.action = GOOGLE_SCRIPT_URL;
-          form.target = 'hidden-iframe';
-        
-          Object.keys(data).forEach(key => {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = key;
-            input.value = data[key];
-            form.appendChild(input);
-          });
-        
-          document.body.appendChild(form);
-          form.submit();
-        
-          setTimeout(() => form.remove(), 1000);
         }
 
-        function showResults() {
+         async function showResults()
+            {
             document.getElementById('quizContent').classList.add('hidden');
             const resultsContent = document.getElementById('resultsContent');
             resultsContent.classList.remove('hidden');
@@ -469,7 +461,8 @@
                 attempt_json: JSON.stringify(userAnswers)
             };
 
-            submitToGoogleSheets(data);
+            await submitToGoogleSheets(data);
+
 
             setTimeout(() => {
                 resultsContent.innerHTML = `
