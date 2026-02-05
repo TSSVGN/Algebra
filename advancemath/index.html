@@ -1,681 +1,277 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Advanced Math – Practice Quiz (Set B, JSON Save)</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Passport to Advanced Math Quiz</title>
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
-      padding: 20px;
-    }
+<style>
+body {
+font-family: Arial, sans-serif;
+background: linear-gradient(135deg,#667eea,#764ba2);
+margin:0;
+padding:20px;
+}
 
-    .container {
-      max-width: 860px;
-      margin: 0 auto;
-      background: white;
-      border-radius: 16px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-      overflow: hidden;
-    }
+.container {
+max-width:800px;
+margin:auto;
+background:white;
+border-radius:12px;
+padding:20px;
+}
 
-    .header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 30px;
-      text-align: center;
-    }
+.option {
+border:1px solid #ccc;
+padding:12px;
+margin:6px 0;
+cursor:pointer;
+border-radius:8px;
+}
 
-    .header h1 { font-size: 28px; margin-bottom: 10px; }
-    .header p { opacity: 0.92; font-size: 16px; }
+.option.selected { background:#eef; }
+.option.correct { background:#c8f7c5; }
+.option.incorrect { background:#ffc9c9; }
 
-    .progress-bar {
-      background: rgba(255,255,255,0.2);
-      height: 8px;
-      border-radius: 4px;
-      margin-top: 20px;
-      overflow: hidden;
-    }
+button {
+padding:12px;
+margin-top:10px;
+cursor:pointer;
+width:100%;
+}
 
-    .progress-fill {
-      background: #4ade80;
-      height: 100%;
-      width: 0%;
-      transition: width 0.3s ease;
-    }
+.hidden { display:none; }
 
-    .panel { padding: 30px; }
+.feedback {
+margin-top:10px;
+padding:10px;
+border-radius:6px;
+}
 
-    .email-card {
-      background: #f9fafb;
-      border: 2px solid #e5e7eb;
-      border-radius: 14px;
-      padding: 22px;
-      text-align: left;
-    }
-
-    .email-card label {
-      font-weight: 700;
-      color: #111827;
-      display: block;
-      margin-bottom: 8px;
-    }
-
-    .email-card input {
-      width: 100%;
-      padding: 14px 16px;
-      font-size: 16px;
-      border: 2px solid #e5e7eb;
-      border-radius: 12px;
-      outline: none;
-    }
-
-    .email-card input:focus {
-      border-color: #667eea;
-      background: #f0f4ff;
-    }
-
-    .question-container { padding: 40px; }
-
-    .question-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-      padding-bottom: 15px;
-      border-bottom: 2px solid #f0f0f0;
-      gap: 12px;
-    }
-
-    .question-number {
-      font-size: 14px;
-      color: #667eea;
-      font-weight: 700;
-    }
-
-    .difficulty {
-      background: #fef3c7;
-      color: #92400e;
-      padding: 4px 12px;
-      border-radius: 12px;
-      font-size: 12px;
-      font-weight: 700;
-      white-space: nowrap;
-    }
-
-    .question-text {
-      font-size: 18px;
-      line-height: 1.6;
-      margin-bottom: 22px;
-      color: #1f2937;
-      white-space: normal;
-    }
-
-    .options { display: flex; flex-direction: column; gap: 12px; }
-
-    .option {
-      background: #f9fafb;
-      border: 2px solid #e5e7eb;
-      border-radius: 12px;
-      padding: 16px 20px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .option:hover { border-color: #667eea; background: #f0f4ff; }
-    .option.selected { border-color: #667eea; background: #eef2ff; }
-    .option.correct { border-color: #10b981; background: #d1fae5; }
-    .option.incorrect { border-color: #ef4444; background: #fee2e2; }
-
-    .option-letter {
-      width: 32px; height: 32px;
-      border-radius: 50%;
-      background: white;
-      border: 2px solid #d1d5db;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      color: #6b7280;
-      flex-shrink: 0;
-    }
-
-    .option.selected .option-letter { background: #667eea; border-color: #667eea; color: white; }
-    .option.correct .option-letter { background: #10b981; border-color: #10b981; color: white; }
-    .option.incorrect .option-letter { background: #ef4444; border-color: #ef4444; color: white; }
-
-    .option-text { flex: 1; font-size: 16px; color: #374151; }
-
-    .input-answer {
-      width: 100%;
-      padding: 16px 20px;
-      font-size: 18px;
-      border: 2px solid #e5e7eb;
-      border-radius: 12px;
-      outline: none;
-      transition: all 0.2s ease;
-    }
-
-    .input-answer:focus { border-color: #667eea; background: #f0f4ff; }
-
-    .buttons { display: flex; gap: 12px; margin-top: 24px; }
-
-    .btn {
-      flex: 1;
-      padding: 14px 24px;
-      border: none;
-      border-radius: 12px;
-      font-size: 16px;
-      font-weight: 800;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .btn-primary { background: #667eea; color: white; }
-    .btn-primary:hover {
-      background: #5568d3;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-    }
-
-    .btn-secondary { background: #f3f4f6; color: #374151; }
-    .btn-secondary:hover { background: #e5e7eb; }
-
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-    .feedback {
-      margin-top: 18px;
-      padding: 16px 20px;
-      border-radius: 12px;
-      display: none;
-      line-height: 1.5;
-    }
-
-    .feedback.show { display: block; }
-    .feedback.correct { background: #d1fae5; border: 2px solid #10b981; color: #065f46; }
-    .feedback.incorrect { background: #fee2e2; border: 2px solid #ef4444; color: #991b1b; }
-
-    .results { text-align: center; padding: 40px; }
-
-    .results h2 { font-size: 32px; color: #1f2937; margin-bottom: 18px; }
-
-    .score-circle {
-      width: 200px; height: 200px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      margin: 22px auto;
-      color: white;
-    }
-
-    .score-number { font-size: 44px; font-weight: 900; }
-    .score-text { font-size: 18px; opacity: 0.92; }
-
-    .results-details {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 16px;
-      margin-top: 22px;
-      text-align: left;
-    }
-
-    .result-card {
-      background: #f9fafb;
-      padding: 18px;
-      border-radius: 12px;
-      border: 2px solid #e5e7eb;
-    }
-
-    .result-card h3 {
-      font-size: 13px;
-      color: #6b7280;
-      margin-bottom: 8px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .result-card p { font-size: 26px; font-weight: 900; color: #1f2937; }
-
-    .save-status {
-      margin-top: 14px;
-      font-weight: 800;
-      color: #111827;
-      opacity: 0.9;
-    }
-
-    .hidden { display: none; }
-
-    @media (max-width: 640px) {
-      .question-container { padding: 24px; }
-      .header h1 { font-size: 24px; }
-      .score-circle { width: 160px; height: 160px; }
-      .score-number { font-size: 36px; }
-    }
-  </style>
+.correctFB { background:#d4edda; }
+.incorrectFB { background:#f8d7da; }
+</style>
 </head>
 
 <body>
-  <div class="container">
-    <div class="header">
-      <h1>Advanced Math Practice Quiz (Set B)</h1>
-      <p>10 Questions • Same Concepts, New Numbers • JSON Save Enabled</p>
-      <div class="progress-bar">
-        <div class="progress-fill" id="progressFill"></div>
-      </div>
-    </div>
 
-    <!-- Email gate -->
-    <div id="emailGate" class="panel">
-      <div class="email-card">
-        <label for="studentEmail">Student email</label>
-        <input id="studentEmail" type="email" placeholder="email@example.com" autocomplete="email" />
-        <div class="buttons">
-          <button class="btn btn-primary" onclick="startQuiz()">Start Quiz</button>
-          <button class="btn btn-secondary" onclick="useSavedEmail()">Use saved email</button>
-        </div>
-      </div>
-    </div>
+<div class="container">
 
-    <div id="quizContent" class="question-container hidden"></div>
-    <div id="resultsContent" class="results hidden"></div>
-  </div>
+<h2>Passport to Advanced Math</h2>
 
-  <script>
-    // =========================
-    // CONFIG
-    // =========================
-    const WEB_APP_URL = "PASTE_YOUR_GOOGLE_SCRIPT_URL_HERE";
-    const QUIZ_NAME = "Advanced Math Set B";
+<div id="emailGate">
+<input id="email" placeholder="Student email" style="width:100%;padding:10px">
+<button onclick="start()">Start Quiz</button>
+</div>
 
-    // =========================
-    // VERIFIED QUESTIONS (Set B)
-    // =========================
-    const questions = [
-      {
-        number: 1,
-        type: 'mcq',
-        difficulty: 'Level 1',
-        question: 'A drone is launched from a rooftop that is 22 feet above the ground. If the drone rises at a constant rate of 15 feet per second, which equation gives the height, h, in feet, of the drone t seconds after it starts rising?',
-        options: [
-          'h = 22t + 15',
-          'h = 22t + 22/15',
-          'h = 15t + 22',
-          'h = 15t + 22/15'
-        ],
-        correct: 2,
-        explanation: 'The initial height is 22 feet (constant term). The drone rises 15 feet each second, so height increases by 15t. Therefore h = 15t + 22.'
-      },
-      {
-        number: 2,
-        type: 'mcq',
-        difficulty: 'Level 1',
-        question: '4,800 − 35k = 3,260\n\nIn 2010, the population of a town was 4,800. The population k years after 2010 was 3,260, and k satisfies the equation above. Which of the following is the best interpretation of the number 35 in this context?',
-        options: [
-          'The population of the town k years after 2010',
-          'The average decrease in population per year from 2010 to k years after 2010',
-          'The total decrease in population from 2010 to k years after 2010',
-          'The value of k when the population was 3,260'
-        ],
-        correct: 1,
-        explanation: 'The equation has the form initial − (rate)(years) = later. The term 35k represents the total decrease over k years, so 35 is the decrease per year.'
-      },
-      {
-        number: 3,
-        type: 'spr',
-        difficulty: 'Level 1',
-        question: '4x − ky = 16\n8x − 6y = 20\n\nIn the system above, k is a constant. For what value of k will the system have no solution?',
-        answer: '3',
-        acceptableAnswers: ['3', '3.0', '3.00'],
-        explanation: 'For no solution, the lines must be parallel (same slope) but not the same line. The second equation has slope 8/6 = 4/3. The first equation 4x − ky = 16 has slope 4/k. Set 4/k = 4/3 to match slopes, giving k = 3. The intercepts differ (since 8x−6y=20 is not 2×(4x−3y=16)), so there is no solution.'
-      },
-      {
-        number: 4,
-        type: 'mcq',
-        difficulty: 'Level 1',
-        question: 'A school club has at most $750 to spend on T-shirts. Each long-sleeve shirt costs $30 and each hoodie costs $45. The club must order at least 18 items total. Which system of inequalities represents this situation in terms of x and y, where x is the number of long-sleeve shirts and y is the number of hoodies?',
-        options: [
-          'x + y ≥ 18\n30x + 45y ≥ 750',
-          'x + y ≥ 18\n30x + 45y ≤ 750',
-          'x + y ≤ 18\n30x + 45y ≥ 750',
-          'x + y ≤ 18\n30x + 45y ≤ 750'
-        ],
-        correct: 1,
-        explanation: 'At least 18 items means x + y ≥ 18. At most $750 means the total cost cannot exceed 750, so 30x + 45y ≤ 750.'
-      },
-      {
-        number: 5,
-        type: 'mcq',
-        difficulty: 'Level 1',
-        question: '7x + 2y = 18\nx − y = 9\n\nWhat is the solution to the system of equations above?',
-        options: [
-          '(4, −5)',
-          '(4, 5)',
-          '(−4, −5)',
-          '(2, −7)'
-        ],
-        correct: 0,
-        explanation: 'From x − y = 9, y = x − 9. Substitute into 7x + 2y = 18: 7x + 2(x − 9) = 18 → 9x − 18 = 18 → 9x = 36 → x = 4. Then y = 4 − 9 = −5. So the solution is (4, −5).'
-      },
-      {
-        number: 6,
-        type: 'mcq',
-        difficulty: 'Level 1',
-        question: 'The graph of the linear function g contains the point (−1, 6). For every increase of 3 units in x, g(x) increases by 9 units. Which equation defines g?',
-        options: [
-          'g(x) = 3x + 9',
-          'g(x) = 9x + 3',
-          'g(x) = 3x + 3',
-          'g(x) = −3x + 3'
-        ],
-        correct: 0,
-        explanation: 'The slope is rise/run = 9/3 = 3. Using y = mx + b and the point (−1, 6): 6 = 3(−1) + b → 6 = −3 + b → b = 9. Therefore g(x) = 3x + 9.'
-      },
-      {
-        number: 7,
-        type: 'mcq',
-        difficulty: 'Level 1',
-        question: 'y ≤ 2x + 1\nx + y > 4\n\nWhich ordered pair (x, y) satisfies the system of inequalities above?',
-        options: [
-          '(1, 3)',
-          '(2, 2)',
-          '(3, 2)',
-          '(0, 5)'
-        ],
-        correct: 2,
-        explanation: 'Test (3, 2): y ≤ 2x + 1 → 2 ≤ 7 ✓ and x + y > 4 → 3 + 2 = 5 > 4 ✓. The other options fail at least one inequality.'
-      },
-      {
-        number: 8,
-        type: 'spr',
-        difficulty: 'Level 1',
-        question: '|t − 11| = 4\n|t − 7| = 0\n\nWhat value of t satisfies both equations?',
-        answer: '7',
-        acceptableAnswers: ['7', '7.0', '7.00'],
-        explanation: 'From |t − 7| = 0, we must have t = 7. Check in the first equation: |7 − 11| = 4, which is true. So t = 7 satisfies both.'
-      },
-      {
-        number: 9,
-        type: 'mcq',
-        difficulty: 'Level 1',
-        question: 'If 5p − 8 ≥ 12, what is the least possible value of 5p + 7?',
-        options: [
-          '19',
-          '23',
-          '27',
-          '31'
-        ],
-        correct: 2,
-        explanation: 'From 5p − 8 ≥ 12, add 8 to both sides to get 5p ≥ 20. The least possible value of 5p is 20, so the least possible value of 5p + 7 is 20 + 7 = 27.'
-      },
-      {
-        number: 10,
-        type: 'mcq',
-        difficulty: 'Level 1',
-        question: 'A line in the xy-plane passes through the origin and has a slope of 2/3. Which could be an equation for this line?',
-        options: [
-          'y = (3/2)x',
-          'y = (2/3)x + 4',
-          'y = (2/3)x',
-          'y = −(2/3)x'
-        ],
-        correct: 2,
-        explanation: 'A line through the origin has y-intercept 0, so there is no constant term. With slope 2/3, the equation is y = (2/3)x.'
-      }
-    ];
+<div id="quiz" class="hidden"></div>
 
-    // =========================
-    // STATE
-    // =========================
-    let currentQuestion = 0;
-    let score = 0;
-    let answered = false;
-    let userAnswers = []; // will store objects for JSON
-    let studentEmail = "";
+<div id="results" class="hidden"></div>
 
-    // =========================
-    // EMAIL HELPERS
-    // =========================
-    function useSavedEmail() {
-      const saved = localStorage.getItem("studentEmail") || "";
-      if (!saved) {
-        alert("No saved email found. Please type the email.");
-        return;
-      }
-      document.getElementById("studentEmail").value = saved;
-    }
+</div>
 
-    function startQuiz() {
-      const input = (document.getElementById("studentEmail").value || "").trim();
-      if (!input) { alert("Please enter student email."); return; }
-      studentEmail = input;
-      localStorage.setItem("studentEmail", studentEmail);
+<script>
 
-      document.getElementById("emailGate").classList.add("hidden");
-      document.getElementById("quizContent").classList.remove("hidden");
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwWARUOETKeW8bV_sjxuh8nVz9lIHTAjAZIyQb4anZoVfbqIeH69S_vpGtDA4DpL4ZquQ/exec";
 
-      renderQuestion();
-    }
+const questions = [
 
-    // =========================
-    // QUIZ RENDER
-    // =========================
-    function renderQuestion() {
-      const q = questions[currentQuestion];
-      const content = document.getElementById('quizContent');
-      answered = false;
+{
+q:`−2x(5x + 1) + 6(5x + 1) = ax² + bx + c
 
-      let html = `
-        <div class="question-header">
-          <div class="question-number">Question ${q.number} of ${questions.length}</div>
-          <div class="difficulty">${q.difficulty}</div>
-        </div>
-        <div class="question-text">${escapeHtml(q.question).replace(/\\n/g, '<br>')}</div>
-      `;
+What is b?`,
+options:["−28","28","8","−8"],
+correct:1,
+exp:"Expand → −10x² + 28x + 6 → b = 28"
+},
 
-      if (q.type === 'mcq') {
-        html += '<div class="options">';
-        q.options.forEach((option, index) => {
-          html += `
-            <div class="option" onclick="selectOption(${index})">
-              <div class="option-letter">${String.fromCharCode(65 + index)}</div>
-              <div class="option-text">${escapeHtml(option).replace(/\\n/g, '<br>')}</div>
-            </div>
-          `;
-        });
-        html += '</div>';
-      } else {
-        html += '<input type="text" class="input-answer" id="studentAnswer" placeholder="Enter your answer">';
-      }
+{
+q:`(1/20)x² − 200 + c = 1400 when x=200
 
-      html += `
-        <div class="feedback" id="feedback"></div>
-        <div class="buttons">
-          <button class="btn btn-primary" onclick="checkAnswer()">Check Answer</button>
-          <button class="btn btn-secondary" id="nextBtn" onclick="nextQuestion()" disabled>Next Question</button>
-        </div>
-      `;
+Find c.`,
+options:["−400","−200","200","400"],
+correct:0,
+exp:"p(200)=1800+c=1400 → c=−400"
+},
 
-      content.innerHTML = html;
-      updateProgress();
-    }
+{
+q:`(2 + 6i)(1 − 4i)
 
-    function selectOption(index) {
-      if (answered) return;
-      document.querySelectorAll('.option').forEach((opt, i) => {
-        opt.classList.remove('selected');
-        if (i === index) opt.classList.add('selected');
-      });
-    }
+Find the real part.`,
+options:["−26","26","−22","22"],
+correct:1,
+exp:"Multiply → 26 − 2i → real part = 26"
+},
 
-    function checkAnswer() {
-      if (answered) return;
+{
+q:`x² − 12x + 27 = 3x + 1
 
-      const q = questions[currentQuestion];
-      const feedback = document.getElementById('feedback');
-      const nextBtn = document.getElementById('nextBtn');
-      let isCorrect = false;
+Sum of solutions?`,
+options:["−15","−12","12","15"],
+correct:3,
+exp:"x² − 15x + 26=0 → sum=15"
+},
 
-      if (q.type === 'mcq') {
-        const selected = document.querySelector('.option.selected');
-        if (!selected) { alert('Please select an answer'); return; }
+{
+q:`h(t)=−16t²+2kt+3
 
-        const selectedIndex = Array.from(document.querySelectorAll('.option')).indexOf(selected);
-        isCorrect = selectedIndex === q.correct;
+Vertex at t=4 → find k.`,
+options:["128","64","8","4"],
+correct:1,
+exp:"Vertex k/16=4 → k=64"
+},
 
-        document.querySelectorAll('.option').forEach((opt, i) => {
-          opt.style.pointerEvents = 'none';
-          if (i === q.correct) opt.classList.add('correct');
-          else if (i === selectedIndex && !isCorrect) opt.classList.add('incorrect');
-        });
+{
+q:`|x−3|=|3x−5|
 
-        userAnswers.push({
-          questionNumber: q.number,
-          type: q.type,
-          userAnswer: selectedIndex,      // 0-based index
-          userAnswerLabel: String.fromCharCode(65 + selectedIndex),
-          correctAnswer: q.correct,
-          correctAnswerLabel: String.fromCharCode(65 + q.correct),
-          isCorrect: isCorrect
-        });
+Solution set?`,
+options:["{1}","{2}","{1,2}","None"],
+correct:2,
+exp:"Square → x²−3x+2=0 → x=1,2"
+},
 
-      } else {
-        const ans = (document.getElementById('studentAnswer').value || "").trim();
-        if (!ans) { alert('Please enter an answer'); return; }
+{
+q:`kx²+6x+9=0 has one solution
 
-        isCorrect = q.acceptableAnswers.some(a =>
-          a.toLowerCase() === ans.toLowerCase() ||
-          (isFinite(parseFloat(a)) && isFinite(parseFloat(ans)) && Math.abs(parseFloat(a) - parseFloat(ans)) < 0.01)
-        );
+Find k.`,
+options:["1","2","3","4"],
+correct:0,
+exp:"Discriminant=0 → k=1"
+},
 
-        document.getElementById('studentAnswer').disabled = true;
+{
+q:`Shift f(x) right 12 and down 4
 
-        userAnswers.push({
-          questionNumber: q.number,
-          type: q.type,
-          userAnswer: ans,
-          acceptableAnswers: q.acceptableAnswers.slice(),
-          isCorrect: isCorrect
-        });
-      }
+h(x)=?`,
+options:[
+"f(x+12)-4",
+"f(x-12)-4",
+"f(x-12)+4",
+"f(x+12)+4"
+],
+correct:1,
+exp:"Right → x−12, down → −4"
+},
 
-      if (isCorrect) {
-        score++;
-        feedback.className = 'feedback correct show';
-        feedback.innerHTML = `✓ Correct! ${escapeHtml(q.explanation)}`;
-      } else {
-        feedback.className = 'feedback incorrect show';
-        feedback.innerHTML = `✗ Incorrect. ${escapeHtml(q.explanation)}`;
-      }
+{
+q:`x-intercepts: −5, −3, 0, 1, 2
 
-      answered = true;
-      nextBtn.disabled = false;
-    }
+Which polynomial?`,
+options:[
+"x(x−5)(x−3)(x+1)(x+2)",
+"x(x+5)(x+3)(x−1)(x−2)",
+"x(x−5)(x+3)(x−1)(x−2)",
+"x(x+5)(x−3)(x+1)(x−2)"
+],
+correct:1,
+exp:"Factor form matches intercepts"
+},
 
-    function nextQuestion() {
-      currentQuestion++;
-      if (currentQuestion < questions.length) renderQuestion();
-      else showResults();
-    }
+{
+q:`(x−3)(x−7)=0
 
-    function updateProgress() {
-      const progress = (currentQuestion / questions.length) * 100;
-      document.getElementById('progressFill').style.width = progress + '%';
-    }
+Solutions?`,
+options:["3","7","3 and 7","none"],
+correct:2,
+exp:"Zero product → 3,7"
+}
 
-    // =========================
-    // RESULTS + SAVE JSON
-    // =========================
-    function showResults() {
-      document.getElementById('quizContent').classList.add('hidden');
-      const resultsContent = document.getElementById('resultsContent');
-      resultsContent.classList.remove('hidden');
+];
 
-      const percentage = Math.round((score / questions.length) * 100);
+let i=0,score=0,answers=[],email="";
 
-      resultsContent.innerHTML = `
-        <h2>Quiz Complete!</h2>
-        <div class="score-circle">
-          <div class="score-number">${score}/${questions.length}</div>
-          <div class="score-text">${percentage}%</div>
-        </div>
+function start(){
+email=document.getElementById("email").value;
+if(!email) return alert("Enter email");
+document.getElementById("emailGate").classList.add("hidden");
+document.getElementById("quiz").classList.remove("hidden");
+render();
+}
 
-        <div class="results-details">
-          <div class="result-card">
-            <h3>Correct</h3>
-            <p style="color:#10b981;">${score}</p>
-          </div>
-          <div class="result-card">
-            <h3>Incorrect</h3>
-            <p style="color:#ef4444;">${questions.length - score}</p>
-          </div>
-          <div class="result-card">
-            <h3>Accuracy</h3>
-            <p>${percentage}%</p>
-          </div>
-        </div>
+function render(){
+const q=questions[i];
+let html=`<h3>Question ${i+1}</h3><p>${q.q.replace(/\n/g,"<br>")}</p>`;
+q.options.forEach((o,n)=>{
+html+=`<div class="option" onclick="pick(${n})">${o}</div>`;
+});
+html+=`<div id="fb"></div>`;
+document.getElementById("quiz").innerHTML=html;
+}
 
-        <div class="buttons" style="margin-top:22px;">
-          <button class="btn btn-primary" onclick="saveAttempt()">Save Result</button>
-          <button class="btn btn-secondary" onclick="location.reload()">Retake Quiz</button>
-        </div>
+let sel=null;
 
-        <div class="save-status" id="saveStatus"></div>
-      `;
-    }
+function pick(n){
+sel=n;
+document.querySelectorAll(".option").forEach((e,j)=>{
+e.classList.toggle("selected",j===n);
+});
+check();
+}
 
-    async function saveAttempt() {
-      const status = document.getElementById("saveStatus");
-      if (!WEB_APP_URL || WEB_APP_URL.includes("https://script.google.com/macros/s/AKfycbwWARUOETKeW8bV_sjxuh8nVz9lIHTAjAZIyQb4anZoVfbqIeH69S_vpGtDA4DpL4ZquQ/exec")) {
-        status.textContent = "⚠ Please paste your Apps Script Web App URL into WEB_APP_URL first.";
-        return;
-      }
+function check(){
+const q=questions[i];
+const fb=document.getElementById("fb");
+let correct=sel===q.correct;
 
-      const payload = {
-        timestamp: new Date().toISOString(),
-        email: studentEmail,
-        quizName: QUIZ_NAME,
-        score: score,
-        total: questions.length,
-        percentage: Math.round((score / questions.length) * 100),
-        answers: userAnswers,
-        meta: questions.map(q => ({ number: q.number, type: q.type, difficulty: q.difficulty }))
-      };
+answers.push({q:i+1,chosen:sel,correct});
 
-      status.textContent = "Saving…";
-      try {
-        await fetch(WEB_APP_URL, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify(payload)
-        });
-        status.textContent = "✅ Saved successfully!";
-      } catch (e) {
-        status.textContent = "❌ Save failed. Check Web App URL / permissions / network.";
-        console.log(e);
-      }
-    }
+if(correct){
+score++;
+fb.innerHTML=`<div class="feedback correctFB">✓ ${q.exp}</div>`;
+}else{
+fb.innerHTML=`<div class="feedback incorrectFB">✗ ${q.exp}</div>`;
+}
 
-    // =========================
-    // UTIL
-    // =========================
-    function escapeHtml(str) {
-      return String(str)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
-  </script>
+document.querySelectorAll(".option").forEach((e,j)=>{
+if(j===q.correct) e.classList.add("correct");
+if(j===sel && !correct) e.classList.add("incorrect");
+e.onclick=null;
+});
+
+setTimeout(next,1200);
+}
+
+function next(){
+i++;
+if(i<questions.length) render();
+else finish();
+}
+
+function finish(){
+document.getElementById("quiz").classList.add("hidden");
+document.getElementById("results").classList.remove("hidden");
+
+const percent=Math.round(score/questions.length*100);
+
+document.getElementById("results").innerHTML=`
+<h3>Quiz Complete</h3>
+<p>${score}/${questions.length} (${percent}%)</p>
+<button onclick="save()">Save Result</button>
+`;
+
+}
+
+async function save(){
+
+const payload={
+timestamp:new Date().toISOString(),
+email,
+score,
+total:questions.length,
+percentage:Math.round(score/questions.length*100),
+answers
+};
+
+await fetch(WEB_APP_URL,{
+method:"POST",
+mode:"no-cors",
+headers:{"Content-Type":"text/plain"},
+body:JSON.stringify(payload)
+});
+
+alert("Saved to Google Sheet!");
+}
+
+</script>
 </body>
 </html>
