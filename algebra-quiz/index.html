@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Algebra Quiz – JSON Save Enabled</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg,#667eea,#764ba2);
+  margin:0;
+  padding:20px;
+}
+
+.container {
+  max-width:800px;
+  margin:auto;
+  background:white;
+  border-radius:12px;
+  padding:20px;
+}
+
+button {
+  padding:12px;
+  font-size:16px;
+  margin-top:10px;
+  cursor:pointer;
+}
+
+.option {
+  border:1px solid #ccc;
+  padding:10px;
+  margin:5px 0;
+  cursor:pointer;
+}
+
+.option.selected {
+  background:#eef;
+}
+
+.hidden {
+  display:none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Heart of Algebra – Quiz</h2>
+
+<div id="studentBlock">
+<label>Enter Student Email:</label><br>
+<input id="studentEmail" type="email" placeholder="email@example.com" style="width:100%;padding:8px">
+<button onclick="startQuiz()">Start Quiz</button>
+</div>
+
+<div id="quizBlock" class="hidden"></div>
+
+<div id="resultBlock" class="hidden"></div>
+
+</div>
+
+<script>
+
+// ===== CONFIG =====
+const WEB_APP_URL = "PASTE_YOUR_GOOGLE_SCRIPT_URL_HERE";
+
+// ===== QUESTIONS =====
+const questions = [
+{
+question: "A balloon starts 10 ft high and rises 12 ft/sec. Equation for height h after t seconds?",
+options:["h=10t+12","h=12t+10","h=12t-10","h=10+12"],
+correct:1,
+explanation:"Initial height is 10. Rise rate is 12t → h=12t+10."
+},
+{
+question:"5x+2=22. Solve for x.",
+options:["4","5","6","8"],
+correct:0,
+explanation:"5x=20 → x=4."
+},
+{
+question:"y=3x+2. What is y when x=2?",
+options:["6","7","8","9"],
+correct:2,
+explanation:"y=3(2)+2=8."
+}
+];
+
+// ===== STATE =====
+let index = 0;
+let score = 0;
+let answers = [];
+let email = "";
+let selected = null;
+
+// ===== START QUIZ =====
+function startQuiz(){
+email = document.getElementById("studentEmail").value.trim();
+if(!email){alert("Enter email"); return;}
+localStorage.setItem("studentEmail",email);
+document.getElementById("studentBlock").classList.add("hidden");
+document.getElementById("quizBlock").classList.remove("hidden");
+render();
+}
+
+// ===== RENDER QUESTION =====
+function render(){
+const q = questions[index];
+let html = `<h3>Question ${index+1}</h3>
+<p>${q.question}</p>`;
+
+q.options.forEach((opt,i)=>{
+html += `<div class="option" onclick="select(${i})">${opt}</div>`;
+});
+
+html += `<button onclick="check()">Check</button>`;
+document.getElementById("quizBlock").innerHTML = html;
+}
+
+function select(i){
+selected = i;
+document.querySelectorAll(".option").forEach((o,j)=>{
+o.classList.toggle("selected",i===j);
+});
+}
+
+// ===== CHECK ANSWER =====
+function check(){
+if(selected===null){alert("Select answer");return;}
+const q = questions[index];
+const correct = selected===q.correct;
+
+answers.push({
+question:index+1,
+chosen:selected,
+correct:correct
+});
+
+if(correct) score++;
+
+alert((correct?"Correct! ":"Incorrect. ")+q.explanation);
+
+index++;
+selected=null;
+
+if(index<questions.length){
+render();
+}else{
+finish();
+}
+}
+
+// ===== FINISH QUIZ =====
+function finish(){
+document.getElementById("quizBlock").classList.add("hidden");
+document.getElementById("resultBlock").classList.remove("hidden");
+
+const percent = Math.round(score/questions.length*100);
+
+document.getElementById("resultBlock").innerHTML =
+`<h3>Quiz Complete</h3>
+<p>Score: ${score}/${questions.length} (${percent}%)</p>
+<button onclick="sendResults(${percent})">Save Result</button>`;
+}
+
+// ===== SEND JSON =====
+async function sendResults(percent){
+
+const payload = {
+timestamp:new Date().toISOString(),
+email:email,
+quiz:"Algebra Quiz",
+score:score,
+total:questions.length,
+percentage:percent,
+answers:answers
+};
+
+try{
+await fetch(WEB_APP_URL,{
+method:"POST",
+headers:{"Content-Type":"text/plain"},
+body:JSON.stringify(payload)
+});
+alert("Saved successfully!");
+}catch(e){
+alert("Save failed.");
+}
+
+}
+
+</script>
+
+</body>
+</html>
+
